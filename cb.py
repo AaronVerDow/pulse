@@ -44,13 +44,13 @@ class line():
     
     def radwave(self, t, c1):
         self.blank()
-        p = math.cos(c1*(self.x+self.y)+t)
+        p = math.cos((self.x-5)*c1*math.pi+t)+math.cos((self.y-5)*c2*math.pi+t)
         self.closepoint(1,p)
         return p
     
     def closepoint(self, ps, z):
         s = float(4)/72
-        p = int((z+2)/s)
+        p = int(math.floor((z+2)/s))
         self.rgb[p] = [1,1,1,1,1,1]
     
 class cube:
