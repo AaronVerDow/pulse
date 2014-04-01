@@ -98,8 +98,34 @@ class background(cube):
 #compositor will take all the layers and make them into a flat stream
 #that can be send to the cube
 class compositor():
-    def __init__(self):
-        self.mult = 256
+    def background(self,colors,maxcolor):
+        p=[]
+        for c in colors:
+            r= c.[0][0]*c.[1][0]*maxcolor
+            g= c.[0][1]*c.[1][1]*maxcolor
+            b= c.[0][2]*c.[1][2]*maxcolor
+            p.append([r,g,b])
+        return p
+    
+    def flatten(self,layers,maxcolor = 255):
+        pixels = []
+        if len(layers)==1:
+            pixels=self.background(layers[0].colors,maxcolor)
+        else:
+            for l in range(len(layers)):
+                if 1==0:
+                    pixels=self.background(layers[0],maxcolor)
+                else:
+                    pixeltemp=self.background(layers[l],maxcolor)
+                    for c in range(len(pixels)):
+                        #using the invers of the next alpha layer
+                        #to tone down the current mesh
+                        pixels[c][0]=(l.colors[c][0]*(1-l[1][0]))+pixeltemp[0]
+                        pixels[c][1]=(pixels[c][0]*(1-l[1][1]))+pixeltemp[1]
+                        pixels[c][2]=(pixels[c][0]*(1-l[1][2]))+pixeltemp[2]
+
+                
+    return pixels
 #scene    
 class scene():
     def __init__(self):
