@@ -1,5 +1,6 @@
 import time
 import math
+import numpy as np
 
 class line():
     pix=[] #this is to be used to store pixel location, size, color, alpha
@@ -15,8 +16,8 @@ class line():
         self.steps = s
         self.scale= scale #scale so that each LED on a strip is an int
         self.sSize = l/s
-        self.rgb= [[0,0,0,0,0,0] for x in range(s)]
-        #self.alpha = [0 for x in range(s)]
+        self.rgb= np.zeros((s,3),dtype=np.float16)#creat an np.array of zeros for each point
+        self.alpha = np.ones((s,3),dtype=np.float16)#creat an np.array of zeros for each point
         
         self.scale1 = float(1)/s #scale to make full strip = 1 sp we can work with colors better
         print s,self.scale1
@@ -30,8 +31,8 @@ class line():
     def rendera(self):
         rgba= [[0,0,0] for x in range(self.steps)]
         
-    def sincolor(self,Xoff,time):
-        for s in range(self.steps):
+    def sincolor(self,Xoff,time):######Need to convert this to np some how######
+        for s in range(self.steps):#####################################
             self.rgb[s][0] = math.sin((s*self.scale1)*(2*math.pi)+Xoff[0]+time)*.5+.5
             self.rgb[s][1] = math.sin((s*self.scale1)*(2*math.pi)+Xoff[1]+time)*.5+.5
             self.rgb[s][2] = math.sin((s*self.scale1)*(2*math.pi)+Xoff[2]+time)*.5+.5
@@ -87,43 +88,39 @@ class cube:
         pass
     
     def pixlist(self):
-        p = []
+        rgblist = []
+        alphalist = []
         for l in self.lines:
-            for r in l.rgb:
-                p.append(r)
-        return p
+            rgblist.append(l.rgb)
+            alphalist.append(l.alpha)
+        self.colors= [np.concatenate(rgblist),np.concatenate(alphalist)]
+        return self.colors
 #background class for the lowest layer.  most likely going to remove
 class background(cube):
     pass
 #compositor will take all the layers and make them into a flat stream
 #that can be send to the cube
 class compositor():
-    def background(self,colors,maxcolor):
-        p=[]
-        for c in colors:
-            r= c.[0][0]*c.[1][0]*maxcolor
-            g= c.[0][1]*c.[1][1]*maxcolor
-            b= c.[0][2]*c.[1][2]*maxcolor
-            p.append([r,g,b])
-        return p
+    def background(self,colors):
+        return np.multiply(colors[0],colors[1])
     
     def flatten(self,layers,maxcolor = 255):
         pixels = []
         if len(layers)==1:
-            pixels=self.background(layers[0].colors,maxcolor)
+            pixels=self.background(layers[0].colors)
         else:
             for l in range(len(layers)):
                 if 1==0:
-                    pixels=self.background(layers[0],maxcolor)
+                    pixels=self.background(layers[0])
                 else:
-                    pixeltemp=self.background(layers[l],maxcolor)
+                    pixeltemp=self.background(layers[l])
                     for c in range(len(pixels)):
                         #using the invers of the next alpha layer
                         #to tone down the current mesh
                         pixels[c][0]=(l.colors[c][0]*(1-l[1][0]))+pixeltemp[0]
                         pixels[c][1]=(pixels[c][0]*(1-l[1][1]))+pixeltemp[1]
                         pixels[c][2]=(pixels[c][0]*(1-l[1][2]))+pixeltemp[2]
-    return pixels
+        return np.asarray((pixels*maxcolor),dtype=np.int32)
 #scene    
 class scene():
     def __init__(self):
