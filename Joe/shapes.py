@@ -3,16 +3,16 @@ import scipy.spatial as sp
 
 class sphere():
     
-    def __init__(self, bpos, alpha, size = 1):
-        self.pos = bpos
+    def __init__(self, bpos, alpha, points, size = 1):
+        self.pos = np.transpose(bpos)
         self.alpha = alpha
+        self.points = points
         self.size = size
 
     #def calcdist(self, pos):
         #return sp.distance.cdist(points,ballpos)
     def calcdist(self, pos):
-        global points
-        print np.clip(self.size-sp.distance.cdist(points,self.pos))
+        print np.shape(np.clip(self.size-sp.distance.cdist(self.points,pos),0,1))
 
     #def moveball(ball):
         #global ballspeed
@@ -21,5 +21,7 @@ class sphere():
         #b= float(ballpos[0,1]+ballspeed)
         #ballpos[0,1]= b
 
+    def update(self):
+        print self.calcdist(self.pos)
     #def flipandinvert(n):
         #return (n-1)*-255

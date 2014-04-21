@@ -15,34 +15,26 @@ else:
 
 n_pixels = 7200
 ##*************read grid******************##
-f = open(grid.txt,'r')
+f = open('grid.txt','r')
 xyz = []
 for i in f:
     x= float(i.split(',')[0].strip())
     y= float(i.split(',')[1].strip())
-    z= float(i.split(',')[1].strip())
-    self.xyz.append([x,y,z])
-points = np.asarry(xyz)
-
+    z= float(i.split(',')[2].strip())
+    xyz.append([x,y,z])
+points = np.asarray(xyz)
+print points
 #c = cb.background("2dgrid.txt",2.4384,72)
-c = shapes.sphere(0,[1,1,1])
+c = shapes.sphere([[0],[0],[0]],[0,1,0],points)
 comp = cb.compositor()
 pixels = []
 start_time = time.time()
-while 0:
-    pixels = []
-    current_time = start_time - time.time()
-    c.surfacewave(current_time)
-    #c.radwave(current_time)
-    p = c.pixlist()
-    for pi in p:
-        pixels.append([pi[0]*256,pi[1]*256,pi[2]*256])
-    client.put_pixels(pixels, channel=0)
 
 while 1:
     pixels = []
     current_time = start_time - time.time()
-    c.rainbow(current_time)
-    p = c.pixlist()#works as an update right now
-    print comp.flatten([c])
-    client.put_pixels(comp.flatten([c]).tolist(), channel=0)
+    #rainbow(current_time)
+    #p = c.pixlist()#works as an update right now
+    #print comp.flatten([c])
+    #client.put_pixels(comp.flatten([c]).tolist(), channel=0)
+    c.update()
