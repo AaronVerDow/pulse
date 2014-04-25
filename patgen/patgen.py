@@ -17,7 +17,7 @@ pstep = Pheight/64
 for x in range(10):
     for y in range(10):
         xy.append([step*x-xoff,step*y-yoff])
-        for z in range(72):
+        for z in range(64):
             t =[step*x-xoff,step*y-yoff,Pheight-(pstep*z)-zoff]
             points.append(t)
 

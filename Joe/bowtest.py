@@ -4,7 +4,7 @@ import opc
 import time
 import numpy as np
 
-IP_PORT = '127.0.0.1:7890'
+IP_PORT = '127.0.0.1:7889'
 
 client = opc.Client(IP_PORT)
 if client.can_connect():
@@ -13,7 +13,7 @@ else:
     # can't connect, but keep running in case the server appears later
     print '    WARNING: could not connect to %s' % IP_PORT
 
-n_pixels = 7200
+n_pixels = 6400
 
 
 
