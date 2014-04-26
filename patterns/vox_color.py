@@ -29,4 +29,4 @@ class color():
         else:
             print "passed color was not rgb, default color, or known pattern"
             print 'setting to black'
-            self.c = color
+            self.c = [0.,0.,0.]
