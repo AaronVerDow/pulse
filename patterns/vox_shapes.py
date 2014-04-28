@@ -25,21 +25,18 @@ class sphere():
         else:
             self.alpha = alpha
 
-    #def calcdist(self, pos):
-        #return sp.distance.cdist(points,ballpos)
     def calcdist(self, pos):
         #calculates the distance from center for each pixel.  clips so
         #we don't have any values out of the range 0-1
         return np.clip(self.size-sp.distance.cdist(self.points,pos),0,1)
 
-    #def moveball(ball):
-        #global ballspeed
-        #if (ballpos[0,1] < -2.286) or (ballpos[0,1] > 2.286):
-            #ballspeed = ballspeed * -1
-        #b= float(ballpos[0,1]+ballspeed)
-        #ballpos[0,1]= b
 
     def update(self):
-        self.pixlist = self.alpha*self.calcdist(self.pos)
+        self.pixlist = (self.alpha*self.calcdist(self.pos))*self.color.c
+        print self.pixlist[3421]
+        #print self.points[3421]
+        #print self.pos
+        print sp.distance.cdist([self.points[3421]],self.pos)
+        
     #def flipandinvert(n):
         #return (n-1)*-255

@@ -24,11 +24,18 @@ for i in f:
     xyz.append([x,y,z])
 points = np.asarray(xyz)
 print len(points)
+##****************************************##
+
+
 #c = cb.background("2dgrid.txt",2.4384,72)
 c = vox_shapes.sphere([[0],[0],[0]],[0,1,0],points)
-comp = cb.compositor()
+comp = cb.comp()
 pixels = []
 start_time = time.time()
+
+layers = [c]
+s=1.
+d=1
 
 while 1:
     pixels = []
@@ -37,4 +44,17 @@ while 1:
     #p = c.pixlist()#works as an update right now
     #print comp.flatten([c])
     #client.put_pixels(comp.flatten([c]).tolist(), channel=0)
-    c.update()
+    for l in layers:
+        l.update()
+    pixels = comp.complayers(layers)
+    client.put_pixels(pixels, channel=0)
+    if d==1:
+        s=s+.1
+        if s>=2:
+            d=0
+    else:
+        s=s-.1
+        if s<=.1:
+            d=1
+    layers[0].size=s
+    

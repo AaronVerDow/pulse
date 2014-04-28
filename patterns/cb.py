@@ -121,6 +121,20 @@ class compositor():
                         pixels[c][1]=(pixels[c][0]*(1-l[1][1]))+pixeltemp[1]
                         pixels[c][2]=(pixels[c][0]*(1-l[1][2]))+pixeltemp[2]
         return np.asarray((pixels*maxcolor),dtype=np.int32)
+
+class comp():
+    def complayers(self, layers):
+        depth = len(layers)
+        if depth == 1:
+            return layers[0].pixlist*255
+        else:
+            rcomp = []
+            for x in range(depth):
+                if x == 0:
+                    rcomp = layers[x].pixlist
+                else:
+                    pass
+
 #scene    
 class scene():
     def __init__(self):
