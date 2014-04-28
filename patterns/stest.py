@@ -36,25 +36,23 @@ start_time = time.time()
 layers = [c]
 s=1.
 d=1
-
+c = vox_shapes.sphere([[0],[0],[0]],[1,0,0],points)
+layers.append(c)
 while 1:
     pixels = []
     current_time = start_time - time.time()
-    #rainbow(current_time)
-    #p = c.pixlist()#works as an update right now
-    #print comp.flatten([c])
-    #client.put_pixels(comp.flatten([c]).tolist(), channel=0)
     for l in layers:
         l.update()
     pixels = comp.complayers(layers)
     client.put_pixels(pixels, channel=0)
     if d==1:
-        s=s+.1
+        s=s+0.1
         if s>=2:
             d=0
     else:
-        s=s-.1
-        if s<=.1:
+        s=s-0.1
+        if s<=0.1:
             d=1
     layers[0].size=s
-    
+    layers[1].size=2-s
+    time.sleep(1 / 60)

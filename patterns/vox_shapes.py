@@ -32,11 +32,12 @@ class sphere():
 
 
     def update(self):
-        self.pixlist = (self.alpha*self.calcdist(self.pos))*self.color.c
-        print self.pixlist[3421]
-        #print self.points[3421]
-        #print self.pos
-        print sp.distance.cdist([self.points[3421]],self.pos)
-        
+        dis = self.calcdist(self.pos)
+        self.pixlist = (self.alpha*dis)*self.color.c
+        self.alphamask = (self.alpha*dis)
+    
+    def maskgen(self):
+        pass
+            
     #def flipandinvert(n):
         #return (n-1)*-255
