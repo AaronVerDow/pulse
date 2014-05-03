@@ -57,10 +57,15 @@ class sphere(layer):
 #base class for holding array of points
 class pointholder():
     points = []
+    pixlist = []
     def add(self,line,x,y,z,size):
         self.points.append([line, x, y, z, size])
-    def remove(self):
+    def remove(self,num):
+        points.pop(num)
+
+    def update(self):
         pass
+        
 
 #surface of points
 class surface(pointholder,layer):
@@ -68,7 +73,7 @@ class surface(pointholder,layer):
         for l in range(len(xy)):
             self.add(l,xy[l][0],xy[l][1],z,size)
         self.color = colorhandle(color)
-    
+
     #changing the starting z val of all points in the surface
     def changez(self,z):
         for l in points:
@@ -78,7 +83,10 @@ class surface(pointholder,layer):
     def changesize(self,size):
         for l in points:
             l[4]=size
-        
+
+class rpoints(pointholder,layer):
+    def __init__(self,pnumber,ttl,size):
+        pass
 
 class point():
     def __init__(self, linenum, z = 0, size = 0):
