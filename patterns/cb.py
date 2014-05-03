@@ -134,7 +134,7 @@ class comp():
             #if we have more the one layer we use the current layer
             #being added and use its alpha map to mask the rolling layer
             else:
-                rcomp = rcomp*(layers[x-1].alphamask)+layers[x].pixlist
+                rcomp = rcomp*(1-layers[x].alphamask)+layers[x].pixlist
         return rcomp*255
 #3425
 #scene    
