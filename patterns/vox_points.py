@@ -12,6 +12,7 @@ class pointholder():
     
     #values of pixels for full cube to be used by compiler
     pixlist = []
+    alphamask = []
 
     #add a new poiint to the point list
     def add(self,line,x,y,z,size):
@@ -26,7 +27,7 @@ class pointholder():
     #def update pixlist
     def updatepix(self):
         #make a new array the size of the final pixel list
-        px=np.zeros(self.gridinfo['pixelcount'])
+        px=np.zeros((self.gridinfo['pixelcount'],1))
         #for each point
         for  p in self.points:
             rendstrip = self.pointrender(p[3],p[4])
@@ -34,8 +35,11 @@ class pointholder():
                 if rendstrip[rp] != 0:
                     pixnumber = p[0]*self.gridinfo['zcount']+rp
                     px[pixnumber]=rendstrip[rp]
-        self.pixlist = px
-        print self.pixlist
+        print np.shape(px)
+        #self.alphamask = px*np.array(self.alpha).reshape(3,1)
+        self.alphamask = px*self.alpha
+        print np.shape(self.alphamask)
+        self.pixlist = self.alphamask*self.color.c
 
     #calculate distance on a 1d plain
     def calcdist(self, location):
@@ -49,16 +53,20 @@ class pointholder():
     
     #update pixlist
     def update(self):
-        pass
+        self.updatepix()
+        
         
 
 #surface of points
 class surface(pointholder,layer):
-    def __init__(self,xy,color,size,z,**griddata):
+    def __init__(self,xy,color,size,z,alpha,**griddata):
         print 'z '+str(z)
         for l in range(len(xy)):
             self.add(l,xy[l][0],xy[l][1],z,size)
+        #pass color to colorhandle in layer class to set it up.
         self.color = self.colorhandle(color)
+        #pass alpha to alpha handle in layer class to set it up.
+        self.alpha = self.alphahandle(alpha)
         self.gridinfo = griddata
 
     #changing the starting z val of all points in the surface
