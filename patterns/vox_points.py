@@ -2,6 +2,7 @@ import numpy as np
 import scipy.spatial as sp
 import vox_color
 from vox_shapes import layer
+import time
 
 #base class for holding array of points
 class pointholder():
@@ -13,16 +14,17 @@ class pointholder():
     #values of pixels for full cube to be used by compiler
     pixlist = []
     alphamask = []
-
-    #add a new poiint to the point list
-    def add(self,line,x,y,z,size):
-        self.points.append([line, x, y, z, size])
-        self.pointsindex.append(line)
-        
+    
+    #time
+    stime = 0
+    ctime = 0
+    
+    def add(self,**newpoint)
+        self.points.append(newpoints)
+    
     #remove points by its position in the list
     def remove(self,num):
         points.pop(num)
-        pointsindex.pop(num)
 
     #def update pixlist
     def updatepix(self):
@@ -60,21 +62,40 @@ class pointholder():
 #surface of points
 class surface(pointholder,layer):
     def __init__(self,xy,color,size,z,alpha,**griddata):
-        print 'z '+str(z)
         for l in range(len(xy)):
-            self.add(l,xy[l][0],xy[l][1],z,size)
+            #self.add(l,xy[l][0],xy[l][1],z,size)
+            self.add({'sid':l,'x': xy[l][0],'y': xy[l][1],'z':z,'size':size})
         #pass color to colorhandle in layer class to set it up.
         self.color = self.colorhandle(color)
         #pass alpha to alpha handle in layer class to set it up.
         self.alpha = self.alphahandle(alpha)
         self.gridinfo = griddata
+        self.stime = time.time()
 
     #changing the starting z val of all points in the surface
     def changez(self,z):
-        for l in points:
-            l[3]=z
+        for l in self.points:
+#            l[3]=z
+            l['z']=z
     
     #changing the size of all points in the surface
     def changesize(self,size):
-        for l in points:
-            l[4]=size
+        for l in self.points:
+#            l[4]=size
+            l['size'] = size
+    
+    def swave(self,):
+        pass
+        
+class pointgroup(pointholder,layer):
+    
+    def __init__(self,color,size,alpha,ppm,**griddata):
+        #pass color to colorhandle in layer class to set it up.
+        self.color = self.colorhandle(color)
+        #pass alpha to alpha handle in layer class to set it up.
+        self.alpha = self.alphahandle(alpha)
+        #grid data stored in a dictionary
+        self.gridinfo = griddata
+        
+        self.size=size #want to add in range option
+    
