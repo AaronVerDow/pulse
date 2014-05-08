@@ -19,8 +19,8 @@ class pointholder():
     stime = 0
     ctime = 0
     
-    def add(self,**newpoint)
-        self.points.append(newpoints)
+    def add(self,**newpoint):
+        self.points.append(newpoint)
     
     #remove points by its position in the list
     def remove(self,num):
@@ -31,11 +31,14 @@ class pointholder():
         #make a new array the size of the final pixel list
         px=np.zeros((self.gridinfo['pixelcount'],1))
         #for each point
-        for  p in self.points:
-            rendstrip = self.pointrender(p[3],p[4])
+        for p in self.points:
+            rendstrip = self.pointrender(p['z'],p['size'])
             for rp in range(len(rendstrip)):
                 if rendstrip[rp] != 0:
-                    pixnumber = p[0]*self.gridinfo['zcount']+rp
+                    pixnumber = p['sid']*self.gridinfo['zcount']+rp
+                    print "p['sid] "+str(p['sid']),
+                    print " self.gridinfo['zcount'] "+str(self.gridinfo['zcount']),
+                    print " rp "+str(rp)
                     px[pixnumber]=rendstrip[rp]
         print np.shape(px)
         #self.alphamask = px*np.array(self.alpha).reshape(3,1)
@@ -64,7 +67,7 @@ class surface(pointholder,layer):
     def __init__(self,xy,color,size,z,alpha,**griddata):
         for l in range(len(xy)):
             #self.add(l,xy[l][0],xy[l][1],z,size)
-            self.add({'sid':l,'x': xy[l][0],'y': xy[l][1],'z':z,'size':size})
+            self.add(**{'sid':l,'x': xy[l][0],'y': xy[l][1],'z':z,'size':size})
         #pass color to colorhandle in layer class to set it up.
         self.color = self.colorhandle(color)
         #pass alpha to alpha handle in layer class to set it up.
