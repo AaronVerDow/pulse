@@ -27,13 +27,22 @@ f.close()
 points = np.asarray(xyz)
 print len(points)
 ##****************************************##
-##*************read grid******************##
+##************read 2dgrid*****************##
 f = open('2dgrid.txt','r')
 xy = []
 for i in f:
     x= float(i.split(',')[0].strip())
     y= float(i.split(',')[1].strip())
-    xyz.append([x,y,z])
+    xy.append([x,y])
+f.close()
+##****************************************##
+
+##************read Z axis*****************##
+f = open('zgrid.txt','r')
+z = []
+for i in f:
+    p= float(i.strip())
+    z.append([z])
 f.close()
 ##****************************************##
 
@@ -48,6 +57,8 @@ s=1.
 d=1
 c = vox_shapes.sphere([[0],[0],[0]],[1,0,0],points)
 layers.append(c)
+start_time = time.time()
+loops = 0
 while 1:
     pixels = []
     current_time = start_time - time.time()
@@ -68,4 +79,9 @@ while 1:
             layers[0].color = j
     layers[0].size=s
     layers[1].size=2-s
-    time.sleep(1/20)
+    #time.sleep(1/20)
+    t = time.time()-start_time
+    loops = loops+1
+    if t>6000:
+        print loops
+        exit()

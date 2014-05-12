@@ -50,7 +50,4 @@ class sphere(layer):
     
     def maskgen(self):
         pass
-            
-    #def flipandinvert(n):
-        #return (n-1)*-255
 
