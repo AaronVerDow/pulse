@@ -29,6 +29,10 @@ class sphere(layer):
     #size, mode (fill or fade), and alpha (0-1 as a scaler or rgb list)
     def __init__(self,spos, color, points, size = 1, mode = 'fade', alpha = 1):
         self.pos = np.transpose(spos)
+        print np.shape(self.pos)
+        print self.pos
+        print np.shape(spos)
+        print spos
         self.size = size
         self.points = points
         
