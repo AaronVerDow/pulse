@@ -1,5 +1,6 @@
 import cb
 import vox_shapes
+import vox_color
 import opc
 import time
 import numpy as np
@@ -22,10 +23,28 @@ for i in f:
     y= float(i.split(',')[1].strip())
     z= float(i.split(',')[2].strip())
     xyz.append([x,y,z])
+f.close()
 points = np.asarray(xyz)
 print len(points)
 ##****************************************##
+##************read 2dgrid*****************##
+f = open('2dgrid.txt','r')
+xy = []
+for i in f:
+    x= float(i.split(',')[0].strip())
+    y= float(i.split(',')[1].strip())
+    xy.append([x,y])
+f.close()
+##****************************************##
 
+##************read Z axis*****************##
+f = open('zgrid.txt','r')
+z = []
+for i in f:
+    p= float(i.strip())
+    z.append([z])
+f.close()
+##****************************************##
 
 #c = cb.background("2dgrid.txt",2.4384,72)
 c = vox_shapes.sphere([[0],[0],[0]],[0,1,0],points)
@@ -38,12 +57,15 @@ s=1.
 d=1
 c = vox_shapes.sphere([[0],[0],[0]],[1,0,0],points)
 layers.append(c)
+start_time = time.time()
+loops = 0
 while 1:
     pixels = []
     current_time = start_time - time.time()
     for l in layers:
         l.update()
     pixels = comp.complayers(layers)
+#    client.put_pixels(pixels, channel=0)
     client.put_pixels(pixels, channel=0)
     if d==1:
         s=s+0.1
@@ -53,6 +75,13 @@ while 1:
         s=s-0.1
         if s<=0.1:
             d=1
+            j= vox_color.color([np.random.random_sample(),np.random.random_sample(),np.random.random_sample()])
+            layers[0].color = j
     layers[0].size=s
     layers[1].size=2-s
-    time.sleep(1 / 60)
+    #time.sleep(1/20)
+    t = time.time()-start_time
+    loops = loops+1
+    if t>6000:
+        print loops
+        exit()
