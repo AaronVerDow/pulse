@@ -84,21 +84,21 @@ for ii in range(n_pixels):
     tens = strips / 10
 
     one_min = 1
-    one_max = ones
+    one_max = ones * 2
     
     ten_min = 20
-    ten_max = 20 + tens
-    print tens
+    ten_max = 20 + tens * 2
 
     r = 0
     b = 0 
     g = 0
 
-    if one_min <= strip_count <= one_max:
-        b = 255
+    if strip_count % 2 == 0:
+        if one_min <= strip_count <= one_max:
+            b = 255
 
-    if ten_min <= strip_count <= ten_max:
-        g = 255
+        if ten_min <= strip_count <= ten_max:
+            g = 255
 
     pixels.append((r, g, b))
 client.put_pixels(pixels, channel=0)
