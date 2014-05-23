@@ -4,7 +4,7 @@ import opc
 import time
 import numpy as np
 
-IP_PORT = '127.0.0.1:7889'
+IP_PORT = '127.0.0.1:7890'
 
 client = opc.Client(IP_PORT)
 if client.can_connect():
