@@ -116,7 +116,11 @@ class pointholder():
                     pixnumber = p['sid']*gd.zcount+rp
                     px[pixnumber]=rendstrip[rp]
         self.alphamask = px*self.alpha
-        self.pixlist = self.alphamask*self.color.c
+        if self.color:
+            self.pixlist = self.alphamask*self.color.c
+        else:
+            self.pixlist = 0
+            self.alphamask = 1-self.alphamask
 
     #calculate distance on a 1d plain
     def calcdist(self, location):
@@ -148,11 +152,14 @@ class surface(pointholder,layer):
         #####################not sure why I have to do this will fix later
         self.initshit()
         #######################
-        for l in range(len(xy)):
+        for l in range(len(gd.xy)):
             #self.add(l,xy[l][0],xy[l][1],z,size)
-            self.add(**{'sid':l,'x': xy[l][0],'y': xy[l][1],'z':z,'zstart':z,'size':size})
+            self.add(**{'sid':l,'x': gd.xy[l][0],'y': gd.xy[l][1],'z':z,'zstart':z,'size':size})
         #pass color to colorhandle in layer class to set it up.
-        self.color = self.colorhandle(color)
+        if color:
+            self.color = self.colorhandle(color)
+        else:
+            self.color = color
         #pass alpha to alpha handle in layer class to set it up.
         self.alpha = self.alphahandle(alpha)
 #        self.gridinfo = griddata
@@ -211,8 +218,11 @@ class dualsurface(pointholder,layer):
         else:
             print "not the same length"
         self.alphamask = px*self.alpha
-        self.pixlist = self.alphamask*self.color.c
-
+        if self.color:
+            self.pixlist = self.alphamask*self.color.c
+        else:
+            self.pixlist = 0
+            self.alphamask = 1-self.alphamask
     #point a, point b, stripid, alpha
     def renderstrip(self,pa,pb, strip, a):
         a = self.findcloses(pa)
@@ -245,3 +255,117 @@ class dualsurface(pointholder,layer):
         self.updatepix(self.pointsa,self.pointsb)
     """end update code
     """
+
+
+class pointgroup(pointholder,layer):
+    
+#        for c in range(pcount):
+#            t = random.randint(0,tspan)
+#            sid = random.randint(0,len(gd.grid2d)-1)
+#            z = random.uniform(gd.zmin,gd.zmax)
+#            self.add(**{'sid': sid, 'x': gd.grid2d[sid][0], 'y': gd.grid2d[sid][1], 'stime': time.time(), 'size': size, 'tspan': t, 'z':z})
+
+    def __init__(self, color = [0.0,0.0,0.0] , alpha = 1, size = 0, pcount = 0, minspawnz= gd.zmin, maxspawnz = gd.zmax, ttl = None):
+        #pass color to colorhandle in layer class to set it up.
+        self.color = self.colorhandle(color)
+        #pass alpha to alpha handle in layer class to set it up.
+        self.alpha = self.alphahandle(alpha)
+        #init some shit
+        self.initshit()
+        
+        self.size = size
+        self.pcount = pcount
+        self.minspawnz = minspawnz
+        self.maxspawnz = maxspawnz
+        self.ttl = ttl
+        self.killperam = []
+        
+    """point modification functions
+    this section hold the 'mods' for point groups
+    they are interchangable with surface mods for the
+    most part and may be moved into the general
+    pointholder class later
+    """
+    def addzshift(self, shift = 0, pertime = 1):
+        """add z shifting
+        shift is the unit of space to move the point
+        time is the 'per time' unit in sec
+        will move each point 'shift' every 'time' seconds
+        """
+        store = storage()
+        store.shift = shift
+        store.time = pertime
+        store.lasttime = time.time()
+        self.mod.append({'modname':self.zshift, 'arg':{'store': store}})
+        return store
+    
+    def zshift(self, target, store):
+        scale = store.time*(time.time()-store.lasttime)
+#        if time.time()-store.lasttime>store.time:
+        for p in target:
+            p['z'] = p['z']+(store.shift*scale)
+        store.lasttime=time.time()
+            
+    def addfadein(self, ftime = 5):
+        self.mod.append({'modname':self.fadein, 'arg':{'ftime':ftime}})
+        
+    def fadein(self, ftime):
+        for p in self.points:
+            if time.time()-p['stime']<ftime:
+                p['alpha']=(time.time-p['stime'])*(1/ftime)
+            
+    
+    """end mod section
+    """
+        
+    """logic for removing points
+    This section is to add peramiters that determan if a point
+    should be popped from the stack.
+    """    
+    def addkillperam(self,peram,compare,arg):
+        self.killperam.append({'peram':peram,'comp':compare,'arg':arg})
+    
+    
+    def cull(self):
+        for k in self.killperam:
+            poplist = []
+            if k['comp']== 'greater':
+                for p in range(len(self.points)):
+                    if self.points[p][k['peram']] >= k['arg']:
+                        self.points.pop(p)
+            elif k['comp']== 'less':
+                for p in range(len(self.points)):
+                    if self.points[p][k['peram']] <= k['arg']:
+                        poplist.append(p)
+            for idx in range(len(poplist)):
+                self.points.pop(poplist[idx]-idx)
+    """end point removal
+    """
+    
+    
+    def fillout(self):
+        while len(self.points) < self.pcount:
+            sid = random.randint(0,len(gd.grid2d)-1)
+            z = random.uniform(self.minspawnz,self.maxspawnz)
+            self.add(**{'sid': sid, 'x': gd.grid2d[sid][0],  'y': gd.grid2d[sid][1], 'stime': time.time(), 'size': self.size, 'ttl': self.ttl, 'z':z, 'alpha':self.alpha})
+            
+
+    def ramp(self):
+        pass
+
+    def update(self):
+        self.cull()
+        self.fillout()
+        for m in self.mod:
+            #if we have variable added to the mod
+            if 'arg' in m:
+                #call the mod and pass the variable in the dic
+                m['modname'](target = self.points,**m['arg'])
+            else:
+                print 'no args listed'
+                m['modname']()
+        self.updatepix()
+
+class storage():
+    def __init__(self):
+        self.stime = time.time()

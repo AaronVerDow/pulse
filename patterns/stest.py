@@ -1,9 +1,11 @@
 import cb
 import vox_shapes
 import vox_color
-import opc
+#import opc
+import fastopc as opc
 import time
 import numpy as np
+import math
 
 IP_PORT = '127.0.0.1:7890'
 
@@ -15,39 +17,11 @@ else:
     print '    WARNING: could not connect to %s' % IP_PORT
 
 n_pixels = 6400
-##*************read grid******************##
-f = open('grid.txt','r')
-xyz = []
-for i in f:
-    x= float(i.split(',')[0].strip())
-    y= float(i.split(',')[1].strip())
-    z= float(i.split(',')[2].strip())
-    xyz.append([x,y,z])
-f.close()
-points = np.asarray(xyz)
-print len(points)
-##****************************************##
-##************read 2dgrid*****************##
-f = open('2dgrid.txt','r')
-xy = []
-for i in f:
-    x= float(i.split(',')[0].strip())
-    y= float(i.split(',')[1].strip())
-    xy.append([x,y])
-f.close()
-##****************************************##
 
-##************read Z axis*****************##
-f = open('zgrid.txt','r')
-z = []
-for i in f:
-    p= float(i.strip())
-    z.append([z])
-f.close()
-##****************************************##
 
-#c = cb.background("2dgrid.txt",2.4384,72)
-c = vox_shapes.sphere([[0],[0],[0]],[0,1,0],points)
+
+co = vox_color.color([1.0,0.0,0.0])
+c = vox_shapes.sphere([[0],[0],[0]],co)
 comp = cb.comp()
 pixels = []
 start_time = time.time()
@@ -55,7 +29,7 @@ start_time = time.time()
 layers = [c]
 s=1.
 d=1
-c = vox_shapes.sphere([[0],[0],[0]],[1,0,0],points)
+c = vox_shapes.sphere([[0],[0],[0]],[1,0,0])
 layers.append(c)
 start_time = time.time()
 loops = 0
@@ -65,7 +39,6 @@ while 1:
     for l in layers:
         l.update()
     pixels = comp.complayers(layers)
-#    client.put_pixels(pixels, channel=0)
     client.put_pixels(pixels, channel=0)
     if d==1:
         s=s+0.1
@@ -79,9 +52,4 @@ while 1:
             layers[0].color = j
     layers[0].size=s
     layers[1].size=2-s
-    #time.sleep(1/20)
-    t = time.time()-start_time
-    loops = loops+1
-    if t>6000:
-        print loops
-        exit()
+    time.sleep(1 / 32.)
