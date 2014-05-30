@@ -174,12 +174,12 @@ $(document).ready(function() {
         <div class="line">&nbsp;</div>
 
 <div id="local_buttons" class="buttons">
-<input type="button" value="Lava Lamp" class="pattern" onClick="run_command('lava');" />
-<input type="button" value="Raver Plaid" class="pattern" onClick="run_command('raver');" />
+<input type="button" value="Lava Lamp" class="pattern" onClick="run_command('lava_lamp');" />
+<input type="button" value="Raver Plaid" class="pattern" onClick="run_command('raver_plaid');" />
 <input type="button" value="Miami" class="pattern" onClick="run_command('miami');" />
-<input type="button" value="Sailor Moon" class="pattern" onClick="run_command('sailor');" />
-<input type="button" value="Spatial Stripes" class="pattern" onClick="run_command('spatial');" />
-<input type="button" value="Grid Numbers" class="pattern" onClick="run_command('grid');" />
+<input type="button" value="Sailor Moon" class="pattern" onClick="run_command('sailor_moon');" />
+<input type="button" value="Spatial Stripes" class="pattern" onClick="run_command('spacial_stripes');" />
+<input type="button" value="Grid Numbers" class="pattern" onClick="run_command('strip_count');" />
 </div>
 
 <div id="stats" class="game">
