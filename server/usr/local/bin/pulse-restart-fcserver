@@ -1,0 +1,2 @@
+killall fcserver
+/usr/local/bin/pulse-start-fcserver

@@ -1,0 +1,4 @@
+#!/bin/bash
+pulse-killall-local-streams
+cd /home/averdow/pulse/patterns/
+./$1

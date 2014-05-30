@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/bin/fcserver /etc/fcserver.json > /var/log/fcserver.log 2>&1

@@ -1,0 +1,1 @@
+lsof | egrep 'localhost.*localhost:fcserver.*ESTABLISHED' | awk '{print $2}' | xargs -n 1 kill
