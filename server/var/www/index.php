@@ -137,8 +137,25 @@ function urlParam(sParam) {
         }
     }
 }
+window.blocked = false;
+window.disable_blocked = false;
+function disable_patterns() {
+    if (window.disable_blocked == false) {
+        $(".pattern").attr("disabled", "disabled");
+        $(".pattern").css("color","#222222");
+    }
+}
+function enable_patterns() {
+    if (window.blocked == false) {
+        $(".pattern").removeAttr("disabled");
+        $(".pattern").css("color","#D6D6D6");
+    }
+}
 function run_command(command,value) {
+    disable_patterns();
 	$('#messages').load("change.php", { command:command, value:value });	
+    window.blocked = true;
+    setTimeout(function(){window.blocked = false;enable_patterns()}, 3000);
 }
 function are_you_sure(command,value) {
     var r=confirm("Are you sure you want to " + command + "?");
@@ -154,9 +171,9 @@ $(document).ready(function() {
     setInterval(function() {
         $('#status').load('index.php #status');
         if (/controlled by foreign host/.test($('#status').text())) {
-            $('#local_buttons').hide()
+            disable_patterns();
         } else {
-            $('#local_buttons').show()
+            enable_patterns();
         }
     }, 1000);
     setInterval(function() {
@@ -174,7 +191,7 @@ $(document).ready(function() {
         <div class="line">&nbsp;</div>
 
 <div id="local_buttons" class="buttons">
-<input type="button" value="Lava Lamp" class="pattern" onClick="run_command('lava_lamp');" />
+<input id="test_button" type="button" value="Lava Lamp" class="pattern" onClick="run_command('lava_lamp');" />
 <input type="button" value="Raver Plaid" class="pattern" onClick="run_command('raver_plaid');" />
 <input type="button" value="Miami" class="pattern" onClick="run_command('miami');" />
 <input type="button" value="Sailor Moon" class="pattern" onClick="run_command('sailor_moon');" />
@@ -205,9 +222,10 @@ $(document).ready(function() {
 
 </div>
 <div class="buttons">
-<input type="button" value="Restart fcserver" class="pattern" onClick="are_you_sure('bounce_fcserver');" />
-<input type="button" value="Restart Peacekeeper" class="pattern" onClick="are_you_sure('bounce_peacekeeper');" />
-<input type="button" value="Reboot" class="pattern" onClick="are_you_sure('reboot');" />
+<input type="button" value="Restart fcserver" onClick="are_you_sure('bounce_fcserver');" />
+<input type="button" value="Restart Peacekeeper" onClick="are_you_sure('bounce_peacekeeper');" />
+<input type="button" value="Force Enable" onClick="window.disable_blocked=true;enable_patterns();" />
+<input type="button" value="Reboot" onClick="are_you_sure('reboot');" />
 </div>
 
         <div id="messages">nothing to report</div>
