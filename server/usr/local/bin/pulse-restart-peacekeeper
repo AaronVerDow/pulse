@@ -1,0 +1,2 @@
+killall pulse-peacekeeper.sh
+pulse-start-peacekeeper

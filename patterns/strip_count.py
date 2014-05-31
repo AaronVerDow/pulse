@@ -101,6 +101,8 @@ for ii in range(n_pixels):
             g = 255
 
     pixels.append((r, g, b))
-client.put_pixels(pixels, channel=0)
-time.sleep(1 / fps)
+
+while True:
+    client.put_pixels(pixels, channel=0)
+    time.sleep(3)
 

@@ -1,0 +1,3 @@
+/sbin/shutdown -r now
+killall pulse-peacekeeper.sh
+echo "rebooting..." > /tmp/fcserver.status
