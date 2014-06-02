@@ -73,7 +73,7 @@ class Client(object):
 
     def _debug(self, m):
         if self.verbose:
-            print '    %s' % str(m)
+            print(m)
 
     def _ensure_connected(self):
         """Set up a connection if one doesn't already exist.
@@ -149,7 +149,8 @@ class Client(object):
         # build OPC message
         len_hi_byte = int(np.size(pixels)/256)
         len_lo_byte = int(np.size(pixels) % 256)
-        header = chr(channel) + chr(0) + chr(len_hi_byte) + chr(len_lo_byte)
+        header = str.encode(chr(channel) + chr(0) + chr(len_hi_byte) + chr(len_lo_byte))
+        #header = chr(channel) + chr(0) + chr(len_hi_byte) + chr(len_lo_byte)
         self._debug('put_pixels: sending pixels to server')
         try:
             self._socket.send(header+pixels.astype(np.uint8).tostring())
