@@ -1,1 +1,1 @@
-/etc/init.d/fcserver stop
+killall fcserver

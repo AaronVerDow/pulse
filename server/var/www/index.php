@@ -197,6 +197,7 @@ $(document).ready(function() {
 <input type="button" value="Sailor Moon" class="pattern" onClick="run_command('sailor_moon');" />
 <input type="button" value="Spatial Stripes" class="pattern" onClick="run_command('spacial_stripes');" />
 <input type="button" value="Grid Numbers" class="pattern" onClick="run_command('strip_count');" />
+<input type="button" value="White" class="pattern" onClick="run_command('white');" />
 </div>
 
 <div id="stats" class="game">
@@ -222,9 +223,14 @@ $(document).ready(function() {
 
 </div>
 <div class="buttons">
+<input type="button" value="Restart Everything" onClick="are_you_sure('restart_everything');" />
+<input type="button" value="Stop Everything" onClick="are_you_sure('stop_everything');" />
 <input type="button" value="Restart fcserver" onClick="are_you_sure('bounce_fcserver');" />
+<input type="button" value="Stop fcserver" onClick="are_you_sure('stop_fcserver');" />
 <input type="button" value="Restart Peacekeeper" onClick="are_you_sure('bounce_peacekeeper');" />
+<input type="button" value="Stop Peacekeeper" onClick="are_you_sure('stop_peacekeeper');" />
 <input type="button" value="Force Enable" onClick="window.disable_blocked=true;enable_patterns();" />
+<input type="button" value="Stop Python" onClick="are_you_sure('stop_python');" />
 <input type="button" value="Reboot" onClick="are_you_sure('reboot');" />
 </div>
 

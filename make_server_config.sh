@@ -26,7 +26,7 @@ EOF
     do
         let $((PIXEL_LOCAL=i*64))
         cat << EOF
-                [ 0, $PIXEL_NO, $PIXEL_LOCAL, 64 ] //$STRIP_NO
+                [ 0, $PIXEL_NO, $PIXEL_LOCAL, 64 ], //$STRIP_NO
 EOF
         let $((STRIP_NO=STRIP_NO+1))
         let $((PIXEL_NO=PIXEL_NO+64))
