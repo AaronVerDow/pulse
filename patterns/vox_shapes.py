@@ -18,7 +18,8 @@ class layer():
     def alphahandle(self,alpha):
         #handling ways that alpha can be passed
         if type(alpha) == int:
-            return [alpha,alpha,alpha]
+#            return [alpha,alpha,alpha]
+            return alpha
         else:
             return alpha
 
@@ -51,4 +52,3 @@ class sphere(layer):
     
     def maskgen(self):
         pass
-
