@@ -1,4 +1,4 @@
-import cb
+import vox
 import vox_shapes
 import vox_color
 import fastopc as opc
@@ -44,7 +44,7 @@ ranbowlist = [[1.,0.,0.],
                 [1.,0.,.5]]
 
 c=[]
-comp = cb.comp()
+comp = vox.comp()
 comp.addfade(.97)
 co = vox_color.color([1.0,0.0,0.0])
 c.append(vox_shapes.sphere([[0],[0],[0]],ranbowlist[0],size = 1))

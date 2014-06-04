@@ -1,4 +1,4 @@
-import cb
+import vox
 import vox_shapes
 import vox_color
 #import opc
@@ -22,7 +22,7 @@ n_pixels = 6400
 
 co = vox_color.color([1.0,0.0,0.0])
 c = vox_shapes.sphere([[0],[0],[0]],co)
-comp = cb.comp()
+comp = vox.comp()
 pixels = []
 start_time = time.time()
 
