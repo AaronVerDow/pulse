@@ -6,11 +6,13 @@ L = 4.572
 W = 4.572
 Pheight = 2.4384
 
-xoff = L/2
-yoff = W/2
+step = L/10
+
+xoff = (L/2)-(step/2)
+yoff = (W/2)-(step/2)
 zoff = Pheight/2
 
-step = L/10
+
 pstep = Pheight/64
 
 
