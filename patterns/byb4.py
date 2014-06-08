@@ -9,9 +9,9 @@ import random
 
 usfullshit = {'pixelcount': 6400}
 ##****************************************##
-#IP_PORT = '127.0.0.1:7890'
+IP_PORT = '127.0.0.1:7890'
 #IP_PORT = '192.168.1.100:7890'
-IP_PORT = '10.0.0.10:7890'
+#IP_PORT = '10.0.0.10:7890'
 
 client = opc.Client(IP_PORT)
 if client.can_connect():
