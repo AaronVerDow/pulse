@@ -195,7 +195,8 @@ $(document).ready(function() {
 <input type="button" value="Raver Plaid" class="pattern" onClick="run_command('raver_plaid');" />
 <input type="button" value="Miami" class="pattern" onClick="run_command('miami');" />
 <input type="button" value="Sailor Moon" class="pattern" onClick="run_command('sailor_moon');" />
-<input type="button" value="Spatial Stripes" class="pattern" onClick="run_command('spacial_stripes');" />
+<input type="button" value="Spatial Stripes" class="pattern" onClick="run_command('spatial_stripes');" />
+<input type="button" value="4 Spheres" class="pattern" onClick="run_command('byb4');" />
 <input type="button" value="Grid Numbers" class="pattern" onClick="run_command('strip_count');" />
 <input type="button" value="White" class="pattern" onClick="run_command('white');" />
 </div>
