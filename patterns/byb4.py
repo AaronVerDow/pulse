@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import vox
 import vox_shapes
 import vox_color

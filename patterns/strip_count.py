@@ -73,9 +73,9 @@ freq_g = waves
 freq_b = waves
 
 # how many seconds the color sine waves take to shift through a complete cycle
-speed_r = 7
-speed_g = -13
-speed_b = 19
+speed_r = 1
+speed_g = -3
+speed_b = 2
 
 
 
@@ -112,6 +112,8 @@ while True:
             if ten_min <= strip_count <= ten_max:
                 g = 255
 
+        if 40 <= strip_count < 44:
+                r = 255
         if strip_count > 44:
             pct = ii / n_pixels
             # diagonal black stripes

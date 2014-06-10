@@ -2,7 +2,7 @@
 $command = $_REQUEST['command'];
 $value = $_REQUEST['value'];
 
-if (preg_match("/^[a-z_]*$/", $command)) {
+if (preg_match("/^[a-z_0123456789]*$/", $command)) {
     print "executing $command\n";
     if ($command == "bounce_fcserver") {
         exec("sudo /usr/local/bin/pulse-restart-fcserver");
