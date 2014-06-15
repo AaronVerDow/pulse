@@ -1,6 +1,43 @@
 import griddata as gd
 import numpy as np
 import time
+import vox_color
+
+#base layer to hold common actions like dynamicly taking color layers   
+class layer():
+    def colorhandle(self,color):
+        #handling veriable in the way color may be passed
+        if type(color) == vox_color.color: #if color is of color object we are good
+            print "that is a god damn color"
+            return color
+        elif type(color) == list:#if color is a list make a color object out of it
+            return vox_color.color(color)
+        else:#else make it just black, you should not have fucked up if you wanted color
+            return vox_color.color('black')
+
+    def alphahandle(self,alpha):
+        #handling ways that alpha can be passed
+        if type(alpha) == int:
+#            return [alpha,alpha,alpha]
+#            return alpha
+            return np.array([[alpha,alpha,alpha]])
+        else:
+            return alpha
+
+    def setalpha(self, alpha):
+        self.alpha = alphahandle(alpha)
+        
+    def setcolor(self, color):
+        self.color = colorhandle(color)
+
+class fillscreen(layer):
+    def __init__(self,color,alpha = 1):
+        self.alpha = self.alphahandle(alpha)
+        self.color = self.colorhandle(color)
+        self.pixels = np.ones((6400,3))
+        
+    def update(self):
+        self.pixlist = self.color.c*self.alpha*self.pixels
 
 #compile final image
 class comp():
