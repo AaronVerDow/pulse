@@ -1,8 +1,13 @@
 #!/bin/bash
 while [ true ]
 do
+    FCSERVER=`ps aux | grep /usr/bin/fcserver | grep -v grep | wc -l`
     RUNNING=`netstat | grep -v localhost | egrep 'fcserver.*ESTABLISHED' | wc -l`
     LOCAL=`lsof | egrep 'localhost.*localhost:fcserver.*ESTABLISHED' | wc -l`
+    if [ $FCSERVER -eq 0 ]
+    then
+        /usr/local/bin/pulse-start-fcserver
+    fi
     if [ $RUNNING -gt 1 ]
     then
         /usr/local/bin/pulse-restart-fcserver
@@ -24,7 +29,10 @@ do
         elif [ $LOCAL -eq 0 ]
         then
             echo "no streams" > /tmp/fcserver.status
-            /usr/local/bin/pulse-start-script lava_lamp.py
+            if [ $FCSERVER -ne 0 ]
+            then
+                /usr/local/bin/pulse-start-script lava_lamp.py
+            fi
         else
             echo "running local stream" > /tmp/fcserver.status
         fi

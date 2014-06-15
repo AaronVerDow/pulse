@@ -54,6 +54,16 @@ h3 {
 .buttons {
     text-align: center;
 }
+.attached {
+    text-align: center;
+    background: green;
+    width: 6%;
+}
+.removed {
+    text-align: center;
+    background: red;
+    width: 6%;
+}
 input[type="button"] {
     background-color: #3D3D3D;
     color: #D6D6D6;
@@ -202,6 +212,23 @@ $(document).ready(function() {
 </div>
 
 <div id="stats" class="game">
+<?php 
+#<h3>FC Status:</h3>
+#<table>
+#<tr>
+#$status = shell_exec("/usr/local/bin/pulse-usb-status");
+#$status = "";
+#$lines = explode(PHP_EOL, $status);
+#$count = 1;
+#foreach ($lines as $line) {
+    #if ($line != "") {
+        #print "<td class='$line'>$count</td>\n";
+    #}
+    #$count++;
+#}
+#</tr>
+#</table>
+?>
 <h3>Uptime:</h3>
 <pre>
 <?php system("uptime"); ?>
@@ -220,6 +247,11 @@ $(document).ready(function() {
 <h3>fcserver messages:</h3>
 <pre>
 <?php system("tail /var/log/fcserver.log"); ?>
+</pre>
+
+<h3>If text is here things are bad:</h3>
+<pre>
+<?php system("dmesg | fgrep fcserver"); ?>
 </pre>
 
 </div>
