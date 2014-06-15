@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import vox
 import vox_points
 import vox_color

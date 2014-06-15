@@ -1,0 +1,2 @@
+#!/bin/bash
+for n in `cat /etc/fcserver.json | grep serial | awk '{print $2}' | sed 's/"//g' | sed 's/,//'`; do tac /var/log/fcserver.log | grep -a $n -m 1; done | awk '{print  $8}' | sed 's/\.//'
