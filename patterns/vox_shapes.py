@@ -46,6 +46,7 @@ class sphere(layer):
             m = dis>0
             self.pixlist = (1-dis)*m*self.alpha*self.color.c
             self.alphamask = (1-dis)*m*self.alpha
+        self.alphamagic()
             
     def movetowards(self):
         ctime = time.time()-self.lastrun

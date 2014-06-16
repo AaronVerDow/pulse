@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.spatial as sp
 import vox_color
-from vox_shapes import layer
+from vox import layer
 import time
 from math import *
 import random
@@ -95,7 +95,7 @@ class pointholder():
     def addpushfield(self,size = 1,location = [0,0,0]):
         self.mod.append({'modname':self.pushfield,'arg':{'size':size,'location':np.array(location).reshape(1,3)}})
         
-    def pushfield(self, size, location):
+    def pushfield(self,target, size, location):
         #dist = sp.distance.cdist(self.points,location)
         for p in self.points:
             x = np.power(sp.distance.cdist(np.array([[p['x']],[p['y']],[p['zstart']]]).reshape(1,3),location),-3)
@@ -143,17 +143,17 @@ class pointholder():
                 print 'no args listed'
                 m['modname']()
         self.updatepix()
+        self.alphamagic()
     """end update code
     """
 
 #surface of points
 class surface(pointholder,layer):
-    def __init__(self,xy,color,size,z,alpha):
+    def __init__(self,color,size,z,alpha):
         #####################not sure why I have to do this will fix later
         self.initshit()
         #######################
         for l in range(len(gd.xy)):
-            #self.add(l,xy[l][0],xy[l][1],z,size)
             self.add(**{'sid':l,'x': gd.xy[l][0],'y': gd.xy[l][1],'z':z,'zstart':z,'size':size})
         #pass color to colorhandle in layer class to set it up.
         if color:
@@ -223,6 +223,7 @@ class dualsurface(pointholder,layer):
         else:
             self.pixlist = 0
             self.alphamask = 1-self.alphamask
+            
     #point a, point b, stripid, alpha
     def renderstrip(self,pa,pb, strip, a):
         a = self.findcloses(pa)
@@ -253,19 +254,14 @@ class dualsurface(pointholder,layer):
                 print 'no args listed'
                 m['modname']()
         self.updatepix(self.pointsa,self.pointsb)
+        self.alphamagic()
     """end update code
     """
 
 
 class pointgroup(pointholder,layer):
-    
-#        for c in range(pcount):
-#            t = random.randint(0,tspan)
-#            sid = random.randint(0,len(gd.grid2d)-1)
-#            z = random.uniform(gd.zmin,gd.zmax)
-#            self.add(**{'sid': sid, 'x': gd.grid2d[sid][0], 'y': gd.grid2d[sid][1], 'stime': time.time(), 'size': size, 'tspan': t, 'z':z})
 
-    def __init__(self, color = [0.0,0.0,0.0] , alpha = 1, size = 0, pcount = 0, minspawnz= gd.zmin, maxspawnz = gd.zmax, ttl = None):
+    def __init__(self, color = [0.0,0.0,0.0] , alpha = 1, mass = 1, size = 0, pcount = 0, minspawnz= gd.zmin, maxspawnz = gd.zmax, ttl = None, maxspeed = 2, ratio = 1.0):
         #pass color to colorhandle in layer class to set it up.
         self.color = self.colorhandle(color)
         #pass alpha to alpha handle in layer class to set it up.
@@ -277,43 +273,84 @@ class pointgroup(pointholder,layer):
         self.pcount = pcount
         self.minspawnz = minspawnz
         self.maxspawnz = maxspawnz
-        self.ttl = ttl
         self.killperam = []
+        self.maxspeed = maxspeed
+        self.ratio = ratio
+        self.stime = time.time()
         
+        if ttl:
+            self.timeout = True
+        else:
+            self.timeout = False
+        self.ttl = ttl
+        
+        self.lastrun = time.time()
+            
     """point modification functions
     this section hold the 'mods' for point groups
     they are interchangable with surface mods for the
     most part and may be moved into the general
     pointholder class later
     """
-    def addzshift(self, shift = 0, pertime = 1):
-        """add z shifting
-        shift is the unit of space to move the point
-        time is the 'per time' unit in sec
-        will move each point 'shift' every 'time' seconds
-        """
-        store = storage()
-        store.shift = shift
-        store.time = pertime
-        store.lasttime = time.time()
-        self.mod.append({'modname':self.zshift, 'arg':{'store': store}})
-        return store
-    
-    def zshift(self, target, store):
-        scale = store.time*(time.time()-store.lasttime)
-#        if time.time()-store.lasttime>store.time:
-        for p in target:
-            p['z'] = p['z']+(store.shift*scale)
-        store.lasttime=time.time()
-            
-    def addfadein(self, ftime = 5):
-        self.mod.append({'modname':self.fadein, 'arg':{'ftime':ftime}})
+#    def addzshift(self, shift = 0, pertime = 1):
+#        """add z shifting
+#        shift is the unit of space to move the point
+#        time is the 'per time' unit in sec
+#        will move each point 'shift' every 'time' seconds
+#        """
+#        store = storage()
+#        store.shift = shift
+#        store.time = pertime
+#        store.lasttime = time.time()
+#        self.mod.append({'modname':self.zshift, 'arg':{'store': store}})
+#        return store
+#
+#    
+#    def zshift(self, target, store):
+#        scale = store.time*(time.time()-store.lasttime)
+##        if time.time()-store.lasttime>store.time:
+#        for p in target:
+#            p['z'] = p['z']+(store.shift*scale)
+#        store.lasttime=time.time()
+#            
+#    def addfadein(self, ftime = 5):
+#        self.mod.append({'modname':self.fadein, 'arg':{'ftime':ftime}})
+#        
+#    def fadein(self, ftime):
+#        for p in self.points:
+#            if time.time()-p['stime']<ftime:
+#                p['alpha']=(time.time-p['stime'])*(1/ftime)
+
+
+    def addzshift(self, target = 'default', ztarget = -3):
+        if target == 'default': target = self.mod
+        target.append({'modname':self.zshift, 'arg':{'targetz':ztarget}})
         
-    def fadein(self, ftime):
-        for p in self.points:
-            if time.time()-p['stime']<ftime:
-                p['alpha']=(time.time-p['stime'])*(1/ftime)
-            
+    def zshift(self, target, targetz):
+        self.ztarget = self.ztarget+targetz
+ 
+     ##Add a sin wave over the X axis
+    def addsinwave(self, target = 'default' , axis ='x', amp = 1, freq = 1, axisoffset = 0, zoffset = 0):
+        """ Adds a sine wave for the x OR y axis
+        axis is x or y
+        amp is the amplitud modifer
+        freq is the frequancy modifer
+        axisoffset shift along what ever axis is selected. (moved left or right)
+        zoffset shifts along the z axiz (moved up or down)
+        """
+        if target == 'default': target = self.mod
+        target.append({'modname':self.sinwave, 'arg':{'axis': axis, 'amp':amp,'freq':freq,'axisoffset':axisoffset,'zoffset':zoffset}})
+
+    def sinwave(self,axis,amp,freq,axisoffset,zoffset,target,**k):
+        """sine wave calculations for each point
+        """
+        for p in range(len(target)):
+            self.ztarget[p] = self.ztarget[p]+(amp*sin(freq*self.points[p][axis]+(time.time()-self.stime)+axisoffset)+zoffset)
+        
+    def updatelocation(self):
+        timechange = time.time()-self.lastrun
+        for p in range(len(self.points)):
+            self.points[p]['z'] = self.points[p]['z']+np.clip(((self.ztarget[p]-self.points[p]['z'])*self.ratio*timechange),0-self.maxspeed,self.maxspeed)
     
     """end mod section
     """
@@ -325,6 +362,12 @@ class pointgroup(pointholder,layer):
     def addkillperam(self,peram,compare,arg):
         self.killperam.append({'peram':peram,'comp':compare,'arg':arg})
     
+    def addtimeout(self, ttl):
+        self.timeout = True
+        self.ttl = ttl
+        
+    def removetimeout(self):
+        self.timeout = False
     
     def cull(self):
         for k in self.killperam:
@@ -332,13 +375,21 @@ class pointgroup(pointholder,layer):
             if k['comp']== 'greater':
                 for p in range(len(self.points)):
                     if self.points[p][k['peram']] >= k['arg']:
-                        self.points.pop(p)
+                        poplist.append(p)
             elif k['comp']== 'less':
                 for p in range(len(self.points)):
                     if self.points[p][k['peram']] <= k['arg']:
                         poplist.append(p)
             for idx in range(len(poplist)):
                 self.points.pop(poplist[idx]-idx)
+        ctime = time.time()
+        poplist = []
+        if self.timeout:
+            for p in range(len(self.points)):
+                if self.points[p]['ttl']>ctime-self.points[p]['stime']:
+                    poplist.append(p)
+            for idx in range(len(poplist)):
+                self.points.pop(poplist[idx]-idx)                
     """end point removal
     """
     
@@ -347,15 +398,15 @@ class pointgroup(pointholder,layer):
         while len(self.points) < self.pcount:
             sid = random.randint(0,len(gd.grid2d)-1)
             z = random.uniform(self.minspawnz,self.maxspawnz)
-            self.add(**{'sid': sid, 'x': gd.grid2d[sid][0],  'y': gd.grid2d[sid][1], 'stime': time.time(), 'size': self.size, 'ttl': self.ttl, 'z':z, 'alpha':self.alpha})
+            self.add(**{'sid': sid, 'x': gd.grid2d[sid][0],  'y': gd.grid2d[sid][1], 'stime': time.time(), 'size': self.size, 'ttl': self.ttl, 'z':z, 'alpha':self.alpha, 'target':z, 'maxspeed':self.maxspeed, 'ratio':self.ratio})
             
-
-    def ramp(self):
-        pass
 
     def update(self):
         self.cull()
         self.fillout()
+        
+        self.locationprep()
+        
         for m in self.mod:
             #if we have variable added to the mod
             if 'arg' in m:
@@ -364,8 +415,29 @@ class pointgroup(pointholder,layer):
             else:
                 print 'no args listed'
                 m['modname']()
+        self.updatelocation()
         self.updatepix()
+        lastrun = time.time()
+        self.alphamagic()
+
+    def locationprep(self):
+        self.ztarget = np.zeros(len(self.points))
+
 
 class storage():
     def __init__(self):
         self.stime = time.time()
+
+class point():
+    def __init__(self,sid,x,y,z,stime,size,ttl,alpha):
+        self.sid = sid
+        self.x = x
+        self.y = y
+        self.z = z
+        self.stime = stime
+        self.size = size
+        
+
+
+#{'sid': sid, 'x': gd.grid2d[sid][0],  'y': gd.grid2d[sid][1], 'stime': time.time(), 'size': self.size, 'ttl': self.ttl, 'z':z, 'alpha':self.alpha}
+#pt = np.dtype({'name':['sid','x','y','z','stime','size','ttl','alpha'],'format':('i4','f4','f4','f4','f8','f4','f4','

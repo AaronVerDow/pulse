@@ -16,6 +16,14 @@ class layer():
             return vox_color.color('black')
 
     def alphahandle(self,alpha):
+        self.void = False
+        self.invert = False
+        if alpha == 'void':
+            self.void = True
+            return np.array([[1.0,1.0,1.0]])
+        if alpha == 'invert':
+            self.invert = True
+            return np.array([[1.0,1.0,1.0]])
         #handling ways that alpha can be passed
         if type(alpha) == int:
 #            return [alpha,alpha,alpha]
@@ -23,6 +31,13 @@ class layer():
             return np.array([[alpha,alpha,alpha]])
         else:
             return alpha
+
+    def alphamagic(self):
+        if self.void == True:
+            self.pixlist = 0
+        if self.invert == True:
+            self.pixlist = 0
+            self.alphamask = 1-self.alphamask
 
     def setalpha(self, alpha):
         self.alpha = alphahandle(alpha)
