@@ -1,5 +1,7 @@
 import griddata as gd
 import numpy as np
+import Image
+import math
 
 class color(object):
     #default colors for the lazy
@@ -15,24 +17,26 @@ class color(object):
         global n_pixels #using global for pixel number
         #check what type of color layer: flat default, passed rgb, or 
         #Procedural generation
+        if isinstance(color, (int, float, long, complex)):
+            self.c = self.huetorgb(color)
         if type(color) is list:
+            if len(color) == 1:
+                np.array(color)
             if len(color) == 3:
-                print 'rgb vals was sent'
+#                print 'rgb vals was sent'
                 self.c = np.array(color).reshape(1,3)
             else:
                 print 'a list was sent but it was the wrong size'
                 print 'setting to black'
                 self.c = np.array([0.,0.,0.]).reshape(1,3)
-                pass #did not pass rgb list,  kill it with fire
-        elif any(color.lower() == i[0] for i in self.clist):##this may  need fixed##
-            print 'def color was passed'
-            pass #build flat color
- #       elif:
- #           print "else"
-        else:
-            print "passed color was not rgb, default color, or known pattern"
-            print 'setting to black'
-            self.c = np.array([0.,0.,0.]).reshape(1,3)
+        
+
+    def huetorgb(self,hue):
+        scale = 360/(2*math.pi)
+        r = math.cos(hue/scale)+.5
+        g = math.cos((hue/scale)+((4./3.)*math.pi))+.5
+        b = math.cos((hue/scale)+((2./3.)*math.pi))+.5
+        return np.clip(np.array([[r,g,b]]),0,1)
 
     #vertical fade from toprgb down to bottomrgb
     def vfadeinit(self, toprgb, bottomrgb):
@@ -44,3 +48,7 @@ class color(object):
             for i in range(64): #remove hard numbers
                 strip.append([toprgb[0]-i*rstep,toprgb[1]-i*gstep,toprgb[2]-i*bstep])
         self.c = strip
+
+    def drawdowninit(self, file):
+        self.im = Image.open(file)
+        self.pxdata = im.load()
