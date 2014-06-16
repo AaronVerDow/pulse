@@ -351,7 +351,7 @@ class pointgroup(pointholder,layer):
         timechange = time.time()-self.lastrun
         for p in range(len(self.points)):
             self.points[p]['z'] = self.points[p]['z']+np.clip(((self.ztarget[p]-self.points[p]['z'])*self.ratio*timechange),0-self.maxspeed,self.maxspeed)
-    
+        print timechange
     """end mod section
     """
         
@@ -392,7 +392,10 @@ class pointgroup(pointholder,layer):
                 self.points.pop(poplist[idx]-idx)                
     """end point removal
     """
-    
+ 
+    def addlayer(self,z=0):
+        for i in range(gd.stripcount):
+            self.add(**{'sid':i, 'x':gd.grid2d[i][0],  'y': gd.grid2d[i][1], 'stime': time.time(), 'size': self.size, 'ttl': self.ttl, 'z':z, 'alpha':self.alpha, 'target':z, 'maxspeed':self.maxspeed, 'ratio':self.ratio})
     
     def fillout(self):
         while len(self.points) < self.pcount:
@@ -417,7 +420,7 @@ class pointgroup(pointholder,layer):
                 m['modname']()
         self.updatelocation()
         self.updatepix()
-        lastrun = time.time()
+        self.lastrun = time.time()
         self.alphamagic()
 
     def locationprep(self):
