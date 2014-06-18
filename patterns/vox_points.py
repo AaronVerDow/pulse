@@ -148,7 +148,7 @@ class pointholder():
 
 #surface of points
 class surface(pointholder,layer):
-    def __init__(self,color,size,z,alpha):
+    def __init__(self,color,size = 1,z = 0,alpha = 1):
         #####################not sure why I have to do this will fix later
         self.initshit()
         #######################
