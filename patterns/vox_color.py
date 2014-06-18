@@ -1,6 +1,5 @@
 import griddata as gd
 import numpy as np
-import Image
 import math
 
 class color(object):
