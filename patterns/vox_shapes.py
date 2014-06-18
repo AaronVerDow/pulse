@@ -58,15 +58,15 @@ class box(layer):
         while points[0][y_max][0][1] > self.pos[0][1] + self.y/2 and y_min < y_max:
             y_max = y_max - 1
 
-        for x in range(x_min, x_max):
-            for y in range(y_min, y_max):
-                for z in range(z_min, z_max):
-                    points[x][y][z][3] = 1
-
         for x in range(0,len(points)):
             for y in range(0,len(points[0])):
                 for z in range(0,len(points[0][0])):
-                    listed_points.append([points[x][y][z][3]])
+                    if x_min <= x <= x_max and y_min <= y <= y_max and z_min <= z <= z_max:
+                        pixel = 1.0
+                    else:
+                        pixel = 0.0
+
+                    listed_points.append([pixel])
 
         self.alphamask = (self.alpha*listed_points)
         self.pixlist = listed_points*self.color.c
