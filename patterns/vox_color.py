@@ -13,10 +13,12 @@ class color(object):
             ['purple',[1.,0.,1.]],
             ['cyan',[0.,1.,1.]]]
     def __init__(self, color):
+        self.hue = 0
         global n_pixels #using global for pixel number
         #check what type of color layer: flat default, passed rgb, or 
         #Procedural generation
         if isinstance(color, (int, float, long, complex)):
+            self.hue = color
             self.c = self.huetorgb(color)
         if type(color) is list:
             if len(color) == 1:
@@ -28,8 +30,22 @@ class color(object):
                 print 'a list was sent but it was the wrong size'
                 print 'setting to black'
                 self.c = np.array([0.,0.,0.]).reshape(1,3)
-        
 
+    def changecolor(self, color):
+        if isinstance(color, (int, float, long, complex)):
+            self.hue = color
+            self.c = self.huetorgb(color)
+        if type(color) is list:
+            if len(color) == 1:
+                np.array(color)
+            if len(color) == 3:
+#                print 'rgb vals was sent'
+                self.c = np.array(color).reshape(1,3)
+            else:
+                print 'a list was sent but it was the wrong size'
+                print 'setting to black'
+                self.c = np.array([0.,0.,0.]).reshape(1,3)
+                
     def huetorgb(self,hue):
         scale = 360/(2*math.pi)
         r = math.cos(hue/scale)+.5
