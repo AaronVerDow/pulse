@@ -140,7 +140,6 @@ class pointholder():
                 #call the mod and pass the variable in the dic
                 m['modname'](target = self.points,**m['arg'])
             else:
-                print 'no args listed'
                 m['modname']()
         self.updatepix()
         self.alphamagic()
@@ -261,7 +260,7 @@ class dualsurface(pointholder,layer):
 
 class pointgroup(pointholder,layer):
 
-    def __init__(self, color = [0.0,0.0,0.0] , alpha = 1, mass = 1, size = 0, pcount = 0, minspawnz= gd.zmin, maxspawnz = gd.zmax, ttl = None, maxspeed = 2, ratio = 1.0):
+    def __init__(self, color = [0.0,0.0,0.0] , alpha = 1, mass = 1, size = 0, pcount = 0, minspawnz= gd.zmin, maxspawnz = gd.zmax, ttl = None, maxspeed = 2, ratio = 1.0, timemult = 1):
         #pass color to colorhandle in layer class to set it up.
         self.color = self.colorhandle(color)
         #pass alpha to alpha handle in layer class to set it up.
@@ -284,7 +283,9 @@ class pointgroup(pointholder,layer):
             self.timeout = False
         self.ttl = ttl
         
+        self.timemult = timemult
         self.lastrun = time.time()
+        self.runtime = 0
             
     """point modification functions
     this section hold the 'mods' for point groups
@@ -330,7 +331,7 @@ class pointgroup(pointholder,layer):
         self.ztarget = self.ztarget+targetz
  
      ##Add a sin wave over the X axis
-    def addsinwave(self, target = 'default' , axis ='x', amp = 1, freq = 1, axisoffset = 0, zoffset = 0):
+    def addsinwave(self, name = None, target = 'default' , axis ='x', amp = 1, freq = 1, axisoffset = 0, zoffset = 0):
         """ Adds a sine wave for the x OR y axis
         axis is x or y
         amp is the amplitud modifer
@@ -339,7 +340,7 @@ class pointgroup(pointholder,layer):
         zoffset shifts along the z axiz (moved up or down)
         """
         if target == 'default': target = self.mod
-        target.append({'modname':self.sinwave, 'arg':{'axis': axis, 'amp':amp,'freq':freq,'axisoffset':axisoffset,'zoffset':zoffset}})
+        target.append({'modname':self.sinwave,'name':name, 'arg':{'axis': axis, 'amp':amp,'freq':freq,'axisoffset':axisoffset,'zoffset':zoffset}})
 
     def sinwave(self,axis,amp,freq,axisoffset,zoffset,target,**k):
         """sine wave calculations for each point
@@ -347,11 +348,21 @@ class pointgroup(pointholder,layer):
         for p in range(len(target)):
             self.ztarget[p] = self.ztarget[p]+(amp*sin(freq*self.points[p][axis]+(time.time()-self.stime)+axisoffset)+zoffset)
         
+    def addrwave(self, name = None, target = 'default', location =[0,0] , amp = 1, freq = 1, axisoffset = 0, zoffset = 0):
+        """adds a radiating sine wave from 'location'
+        """
+        if target == 'default': target = self.mod
+        target.append({'modname':self.rwave, 'name':name, 'arg':{'location': np.array(location).reshape(1,2),'amp':amp,'freq':freq,'axisoffset':axisoffset,'zoffset':zoffset}})       
+    
+    def rwave(self, location, amp, freq, axisoffset, zoffset, target):
+        dist = self.calc2ddist(location)
+        for p in range(len(target)):
+            self.ztarget[p] = self.ztarget[p] + (amp*sin(freq*dist[self.points[p]['sid']]+self.runtime+axisoffset)+zoffset)
+
     def updatelocation(self):
         timechange = time.time()-self.lastrun
         for p in range(len(self.points)):
             self.points[p]['z'] = self.points[p]['z']+np.clip(((self.ztarget[p]-self.points[p]['z'])*self.ratio*timechange),0-self.maxspeed,self.maxspeed)
-        print timechange
     """end mod section
     """
         
@@ -408,6 +419,8 @@ class pointgroup(pointholder,layer):
         self.cull()
         self.fillout()
         
+        #keep track of time with rolling distortion.
+        self.runtime = self.runtime + (time.time()-self.lastrun)*self.timemult
         self.locationprep()
         
         for m in self.mod:

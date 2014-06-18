@@ -52,3 +52,25 @@ class sphere(layer):
         ctime = time.time()-self.lastrun
         self.pos = self.pos+np.clip(((self.target-self.pos)*self.ratio*ctime),-self.maxspeed,self.maxspeed)
         self.lastrun = time.time()
+
+class cylinder():
+    """
+    pl0 = first point on line
+    pl1 = 2nd point on line
+    planp = point on the plane
+    plann = normal of the plane
+    """
+    def isectp(self,lp0,lp1,planp,plann):
+        #make direction vector
+        u = lp1-lp0
+        #don't know but something to do with direction to point on surface
+        w = lp0-planp
+        
+        dot = np.dot(plann,np.transpose(u))
+        
+        if abs(dot)>.0000001:
+            fac = -np.dot(plann,w)/dot
+            u2 = u*fac
+            return lp0+u2
+        else:
+            return None
