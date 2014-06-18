@@ -56,10 +56,11 @@ class fillscreen(layer):
 
 #compile final image
 class comp():
-    def __init__(self):
+    def __init__(self, ablock = True):
         self.particle=False
         self.fade = False
         self.shift = False
+        self.ablock = ablock
 
 
     #Take layers(an array of layer objects that have pixlist and
@@ -72,7 +73,10 @@ class comp():
             #if we have more the one layer we use the current layer
             #being added and use its alpha map to mask the rolling layer
             else:
-                rcomp = rcomp*(1-layers[x].alphamask)+layers[x].pixlist
+                if self.ablock:
+                    rcomp = rcomp*(1-layers[x].alphamask)+layers[x].pixlist
+                else:
+                    rcomp = rcomp*(1-layers[x].pixlist)+layers[x].pixlist
         if self.particle:
             rcomp = self.blendparticle(rcomp)
         elif self.fade:
