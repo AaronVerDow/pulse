@@ -45,6 +45,15 @@ class color(object):
                 print 'a list was sent but it was the wrong size'
                 print 'setting to black'
                 self.c = np.array([0.,0.,0.]).reshape(1,3)
+
+    def shifthue(self,change):
+        if self.hue:
+            newhue = self.hue+change
+            self.c = self.huetorgb(newhue)
+            self.hue = newhue
+        else:
+            self.hue = change
+            self.c = self.huetorgb(change)
                 
     def huetorgb(self,hue):
         scale = 360/(2*math.pi)

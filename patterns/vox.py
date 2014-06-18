@@ -10,7 +10,7 @@ class layer():
         if type(color) == vox_color.color: #if color is of color object we are good
             print "that is a god damn color"
             return color
-        elif type(color) == list:#if color is a list make a color object out of it
+        elif type(color) == list or isinstance(color, (int, float, long, complex)):#if color is a list make a color object out of it
             return vox_color.color(color)
         else:#else make it just black, you should not have fucked up if you wanted color
             return vox_color.color('black')
@@ -44,6 +44,9 @@ class layer():
         
     def setcolor(self, color):
         self.color = colorhandle(color)
+        
+    def shifthue(self, change):
+        self.color.shifthue(change)
 
 class fillscreen(layer):
     def __init__(self,color,alpha = 1):
