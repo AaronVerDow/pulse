@@ -24,11 +24,8 @@ class color(object):
             if len(color) == 1:
                 np.array(color)
             if len(color) == 3:
-#                print 'rgb vals was sent'
                 self.c = np.array(color).reshape(1,3)
             else:
-                print 'a list was sent but it was the wrong size'
-                print 'setting to black'
                 self.c = np.array([0.,0.,0.]).reshape(1,3)
 
     def changecolor(self, color):
@@ -39,12 +36,20 @@ class color(object):
             if len(color) == 1:
                 np.array(color)
             if len(color) == 3:
-#                print 'rgb vals was sent'
                 self.c = np.array(color).reshape(1,3)
             else:
-                print 'a list was sent but it was the wrong size'
-                print 'setting to black'
                 self.c = np.array([0.,0.,0.]).reshape(1,3)
+
+    def evalcolor(self, color):
+        if isinstance(color, (int, float, long, complex)):
+            return self.huetorgb(color)
+        if type(color) is list:
+            if len(color) == 1:
+                return np.array(color)
+            if len(color) == 3:
+                return np.array(color).reshape(1,3) 
+        else:
+            return np.array([0.,0.,0.]).reshape(1,3)
 
     def shifthue(self,change):
         if self.hue:
@@ -63,16 +68,61 @@ class color(object):
         return np.clip(np.array([[r,g,b]]),0,1)
 
     #vertical fade from toprgb down to bottomrgb
-    def vfadeinit(self, toprgb, bottomrgb):
-        strip= []
+    def vfadeinit(self, topcolor, bottomcolor):
+        if isinstance(topcolor, (int, float, long, complex)) and isinstance(bottomcolor, (int, float, long, complex)):
+            self.tophue = topcolor
+            toprgb = self.huetorgb(topcolor)[0]
+            self.bottomhue = bottomcolor
+            bottomrgb = self.huetorgb(bottomcolor)[0]
+        else:
+            toprgb = topcolor
+            bottomrgb = bottomcolor
+        self.strip= np.zeros((6400,3))
         rstep = (toprgb[0]-bottomrgb[0])/64 ##remve hard numbers
         gstep = (toprgb[1]-bottomrgb[1])/64
         bstep = (toprgb[2]-bottomrgb[2])/64
-        for x in range(100): ##remove hard numbers
-            for i in range(64): #remove hard numbers
-                strip.append([toprgb[0]-i*rstep,toprgb[1]-i*gstep,toprgb[2]-i*bstep])
-        self.c = strip
+#        for x in range(100): ##remove hard numbers
+#            for i in range(64): #remove hard numbers
+#                strip.append([toprgb[0]-i*rstep,toprgb[1]-i*gstep,toprgb[2]-i*bstep])
+        for x in range(64):
+            self.strip[x:6400+x:64] = np.array([toprgb[0]-x*rstep,toprgb[1]-x*gstep,toprgb[2]-x*bstep])
+            
+        self.c = self.strip
+        
+    def vfadeshift(self, topshift, bottomshift):
+        self.tophue += topshift
+        toprgb = self.huetorgb(self.tophue)[0] 
+        self.bottomhue += bottomshift
+        bottomrgb = self.huetorgb(self.bottomhue)[0]
+        
+        rstep = (toprgb[0]-bottomrgb[0])/64 ##remve hard numbers
+        gstep = (toprgb[1]-bottomrgb[1])/64
+        bstep = (toprgb[2]-bottomrgb[2])/64
+        for x in range(64):
+            self.strip[x:6400+x:64] = np.array([toprgb[0]-x*rstep,toprgb[1]-x*gstep,toprgb[2]-x*bstep])
+        self.c = self.strip       
 
-    def drawdowninit(self, file):
-        self.im = Image.open(file)
-        self.pxdata = im.load()
+    def vrainbow(self,shift = 0, steps = 2 , flip = False):
+        holder = np.zeros((100,64,3))
+        if flip:
+            for x in range(64):
+                holder[:,63-x] = self.huetorgb(shift+x*steps)            
+        else:
+            for x in range(64):
+                holder[:,x] = self.huetorgb(shift+x*steps)
+        holder = holder.reshape(6400,3)
+        self.c = holder
+
+    def xrainbow(self,shift = 0, steps = 2, flip = False):
+        holder = np.zeros((10,10,64,3))
+        for x in range(10):
+            holder[:,x]= self.huetorgb(shift+x*steps)
+        holder = holder.reshape(6400,3)
+        self.c = holder
+        
+    def yrainbow(self,shift = 0, steps = 2, flip = False):
+        holder = np.zeros((10,10,64,3))
+        for x in range(10):
+            holder[x,:]= self.huetorgb(shift+x*steps)
+        holder = holder.reshape(6400,3)
+        self.c = holder
